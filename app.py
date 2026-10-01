@@ -3,7 +3,7 @@ import requests
 
 st.title("Mistral AI Text Summarizer")
 
-API_KEY = "mstrl_c710PaOTB63cAYEeiR3oxwRSfoCsMHnM_4ynmoF"
+API_KEY = "mstrl_6RuhTCm5dZdkfcqC2akL314wwLHyW5W6_0e2bQY"
 
 text = st.text_area(
     "Enter your huge text",
