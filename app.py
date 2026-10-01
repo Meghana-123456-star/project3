@@ -10,7 +10,7 @@ st.title("📝 Mistral AI Text Summarizer")
 st.write("Summarize your text using Mistral AI.")
 
 # Paste your NEW Mistral API key here
-API_KEY = "mstrl_6RuhTCm5dZdkfcqC2akL314wwLHyW5W6_0e2bQY"
+API_KEY = "mstrl_pY1VpFX1UQtmY7O7tfaFVFjiKpRhc0c6_3f9aql"
 
 
 # Text input
