@@ -1,89 +1,77 @@
 import streamlit as st
 import requests
 
-# Page configuration
-st.set_page_config(
-    page_title="AI Text Summarizer",
-    page_icon="📝",
-    layout="wide"
-)
+st.title("Mistral AI Text Summarizer")
 
-# Title
-st.title("📝 AI Text Summarizer")
-st.write("Summarize your text using the Mistral AI model with Ollama.")
+API_KEY = "mstrl_c710PaOTB63cAYEeiR3oxwRSfoCsMHnM_4ynmoF"
 
-# Text input
 text = st.text_area(
-    "Enter your text:",
-    height=300,
-    placeholder="Paste your paragraph or article here..."
+    "Enter your huge text",
+    height=300
 )
 
-# Summary length
-summary_length = st.selectbox(
-    "Select summary length:",
-    ["Short", "Medium", "Detailed"]
+user_prompt = st.text_input(
+    "Enter your summarization prompt",
+    "Summarize this text in 5 simple bullet points."
 )
 
-# Generate summary
-if st.button("✨ Generate Summary"):
+if st.button("Summarize"):
 
-    if not text.strip():
-        st.warning("Please enter some text first.")
-
+    if text.strip() == "":
+        st.warning("Please enter some text.")
     else:
-        if summary_length == "Short":
-            instruction = "Summarize the text in 3 to 4 sentences."
-
-        elif summary_length == "Medium":
-            instruction = "Summarize the text in 5 to 7 sentences."
-
-        else:
-            instruction = "Provide a detailed summary covering all important points."
 
         prompt = f"""
-You are an expert text summarization assistant.
+You are an AI text summarizer.
 
-Summarize the following text.
+Summarize the following text according to the user's instruction.
 
-Instructions:
-- {instruction}
-- Keep the important information.
-- Do not add information that is not present in the original text.
-- Use clear and simple language.
+User instruction:
+{user_prompt}
 
 Text:
 {text}
+
+Rules:
+- Keep the original meaning.
+- Remove unnecessary repetition.
+- Use simple English.
+- Include important facts, dates and numbers.
+- Do not add information that is not present in the text.
 """
 
-        with st.spinner("Generating summary..."):
+        url = "https://api.mistral.ai/v1/chat/completions"
 
-            try:
-                response = requests.post(
-                    "http://localhost:11434/api/generate",
-                    json={
-                        "model": "mistral",
-                        "prompt": prompt,
-                        "stream": False
-                    }
-                )
+        headers = {
+            "Authorization": f"Bearer {API_KEY}",
+            "Content-Type": "application/json"
+        }
 
-                if response.status_code == 200:
+        data = {
+            "model": "mistral-small-latest",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            "temperature": 0.2
+        }
 
-                    result = response.json()["response"]
+        response = requests.post(
+            url,
+            headers=headers,
+            json=data
+        )
 
-                    st.success("Summary generated successfully!")
+        if response.status_code == 200:
+            result = response.json()
 
-                    st.subheader("📌 Summary")
-                    st.write(result)
+            summary = result["choices"][0]["message"]["content"]
 
-                else:
-                    st.error(
-                        f"Ollama Error: {response.status_code}"
-                    )
+            st.subheader("Summary")
+            st.write(summary)
 
-            except requests.exceptions.ConnectionError:
-                st.error(
-                    "Could not connect to Ollama. "
-                    "Please make sure Ollama is running."
-                )
+        else:
+            st.error("Something went wrong.")
+            st.write(response.text)
